@@ -1,0 +1,18 @@
+services:
+  fluent-bit:
+    image: fluent/fluent-bit:latest
+    ports:
+      - "2020:2020"
+      - "2021:2021"
+    command: ["/fluent-bit/bin/fluent-bit", "-c", "/fluent-bit/etc/fluent-bit.conf", "--enable-hot-reload", "-e", "/etc/out_multiinstance.so"]
+    volumes:
+      - ./fluent-bit.conf:/fluent-bit/etc/fluent-bit.conf
+      - ./bin/out_multiinstance.so:/etc/out_multiinstance.so
+      - ./logs:/var/log
+
+  log-generator:
+    image: bash:latest
+    volumes:
+      - ./logs:/var/log
+      - ./log-generator.sh:/usr/local/bin/log-generator.sh
+    command: ["/bin/sh", "/usr/local/bin/log-generator.sh"]
